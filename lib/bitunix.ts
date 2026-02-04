@@ -10,13 +10,32 @@ if (!API_KEY || !API_SECRET) {
 }
 
 /**
- * Generates the HMAC SHA256 signature for Bitunix API
- * payload = timestamp + HTTP_METHOD + requestPath + body
+ * SHA256 Helper
  */
-function generateSignature(timestamp: string, method: string, path: string, body: string = ''): string {
-    const payload = timestamp + method.toUpperCase() + path + body;
-    const hmac = crypto.createHmac('sha256', API_SECRET || '');
-    return hmac.update(payload).digest('hex');
+function sha256(data: string): string {
+    return crypto.createHash('sha256').update(data).digest('hex');
+}
+
+/**
+ * Generates the Double-SHA256 signature for Bitunix API
+ * Step 1. digest = sha256(nonce + timestamp + api-key + queryParams + body)
+ * Step 2. sign = sha256(digest + secretKey)
+ */
+function generateSignature(nonce: string, timestamp: string, body: string = ''): string {
+    // Note: Query params are empty for current endpoints, so just skipping them in this implementation
+    // If needed later, they must be sorted and appended here.
+
+    // Step 1: Create Digest
+    // payload = nonce + timestamp + api-key + queryParams(empty) + body
+    const digestInput = nonce + timestamp + API_KEY + body;
+    const digest = sha256(digestInput);
+
+    // Step 2: Create Signature
+    // sign = sha256(digest + secretKey)
+    const signInput = digest + API_SECRET;
+    const signature = sha256(signInput);
+
+    return signature;
 }
 
 /**
@@ -32,14 +51,15 @@ export async function bitunixFetch<T>(
     }
 
     const timestamp = Date.now().toString();
+    const nonce = crypto.randomBytes(16).toString('hex'); // 32 characters
     const requestPath = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
     const url = `${BASE_URL}${requestPath}`;
 
     const bodyString = body ? JSON.stringify(body) : '';
 
-    const signature = generateSignature(timestamp, method, requestPath, bodyString);
+    // Generate Signature with new Double-SHA256 Algorithm
+    const signature = generateSignature(nonce, timestamp, bodyString);
 
-    const nonce = crypto.randomBytes(16).toString('hex'); // 32 characters
     const headers: HeadersInit = {
         'Content-Type': 'application/json',
         'api-key': API_KEY,
@@ -51,7 +71,7 @@ export async function bitunixFetch<T>(
     const options: RequestInit = {
         method,
         headers,
-        cache: 'no-store', // Ensure fresh data
+        cache: 'no-store',
     };
 
     if (method === 'POST' && body) {
