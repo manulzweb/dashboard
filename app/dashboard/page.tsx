@@ -1,10 +1,13 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import Navbar from '@/components/Navbar';
 import BalanceTable from '@/components/BalanceTable';
-import { Balance, UserAccount } from '@/lib/types';
+import PortfolioChart from '@/components/PortfolioChart';
+import AllocationDonut from '@/components/AllocationDonut';
+import { Balance } from '@/lib/types';
 import { useRouter } from 'next/navigation';
+import { DollarSign } from 'lucide-react';
 
 export default function DashboardPage() {
     const [balances, setBalances] = useState<Balance[]>([]);
@@ -29,22 +32,12 @@ export default function DashboardPage() {
 
             const responseData = await res.json();
 
-            // Adaptation: Bitunix response usually wraps data in 'data'.
-            // Our API route returns whatever Bitunix returns.
-            // Let's assume UserAccount is the shape of data, or data.data?
-            // lib/types.ts says BitunixResponse<T> { data: T }
-            // Our API route returns `data` which is BitunixResponse<UserAccount>. 
-            // Verify route.ts "return NextResponse.json(data);" where data = bitunixFetch -> returns BitunixResponse<UserAccount>
-
-            if (responseData.code === 200 || responseData.code === 0) { // Success codes vary, often 0 or 200
-                // data.data should be UserAccount
+            if (responseData.code === 200 || responseData.code === 0) {
                 if (responseData.data && Array.isArray(responseData.data.assets)) {
                     setBalances(responseData.data.assets);
                 } else if (responseData.data && Array.isArray(responseData.data)) {
-                    // Sometimes it's direct array? Just defensive coding.
                     setBalances(responseData.data);
                 } else {
-                    // Maybe assets are missing or filtered
                     setBalances([]);
                 }
             } else {
@@ -63,18 +56,45 @@ export default function DashboardPage() {
         fetchBalances();
     }, [fetchBalances]);
 
+    // Calculate Total Balance
+    const totalBalance = useMemo(() => {
+        return balances.reduce((acc, curr) => acc + parseFloat(curr.usdtValue), 0);
+    }, [balances]);
+
     return (
-        <div className="min-h-screen bg-gray-100">
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
             <Navbar />
 
-            <main className="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
-                <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-                    <p className="mt-2 text-sm text-gray-600">Overview of your Bitunix assets.</p>
+            <main className="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8 space-y-8">
+
+                {/* Header Section */}
+                <div className="flex justify-between items-end">
+                    <div>
+                        <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">Dashboard</h1>
+                        <p className="mt-2 text-lg text-gray-600">Overview of your Bitunix assets</p>
+                    </div>
+                    <div className="text-right">
+                        <span className="text-sm font-medium text-gray-500 uppercase tracking-widest">Total Balance</span>
+                        <div className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 mt-1 flex items-center justify-end gap-1">
+                            <DollarSign className="w-8 h-8 text-blue-600" />
+                            {totalBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            <span className="text-lg text-gray-400 font-medium ml-2">USDT</span>
+                        </div>
+                    </div>
                 </div>
 
-                <div className="grid grid-cols-1 gap-6">
-                    {/* We can add Transfer/Withdraw widgets here later */}
+                {/* Charts Grid */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div className="lg:col-span-2">
+                        <PortfolioChart />
+                    </div>
+                    <div className="lg:col-span-1">
+                        <AllocationDonut balances={balances} />
+                    </div>
+                </div>
+
+                {/* Assets Table */}
+                <div className="mt-8">
                     <BalanceTable
                         balances={balances}
                         loading={loading}
