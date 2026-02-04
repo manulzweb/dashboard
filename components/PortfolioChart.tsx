@@ -10,8 +10,13 @@ import {
     ResponsiveContainer
 } from 'recharts';
 
-export default function PortfolioChart() {
-    // In a real app, you would fetch history. For now, we simulate a "live" feeling trend.
+interface PortfolioChartProps {
+    selectedAsset?: any | null;
+}
+
+export default function PortfolioChart({ selectedAsset }: PortfolioChartProps) {
+    // In a real app, you would fetch history based on `selectedAsset.currency`.
+    // For now, we simulate a "live" feeling trend or static data.
     const data = [
         { name: 'Mon', value: 4000 },
         { name: 'Tue', value: 3000 },
@@ -23,26 +28,38 @@ export default function PortfolioChart() {
     ];
 
     return (
-        <div className="bg-white/50 backdrop-blur-md border border-white/20 shadow-xl rounded-2xl p-6 h-full transition-all hover:shadow-2xl">
-            <h3 className="text-xl font-bold text-gray-800 mb-2 flex items-center gap-2">
-                Portfolio Trend
-                <span className="text-xs font-normal text-gray-500 bg-gray-100 px-2 py-1 rounded-full">7 Day</span>
-            </h3>
+        <div className="bg-[#0a0a0f]/80 backdrop-blur-xl border border-white/10 shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)] rounded-2xl p-6 h-full transition-all hover:shadow-[0_0_30px_-10px_rgba(0,243,255,0.2)] group">
+            <div className="flex justify-between items-center mb-6">
+                <div>
+                    <h3 className="text-xl font-black text-white flex items-center gap-2 tracking-tight">
+                        {selectedAsset ? (
+                            <>
+                                <span className="text-[#00f3ff]">{selectedAsset.currency}</span> TREND
+                            </>
+                        ) : 'PORTFOLIO TREND'}
+                    </h3>
+                    <p className="text-xs text-gray-500 font-mono tracking-widest uppercase mt-1">
+                        {selectedAsset ? `Live price action for ${selectedAsset.currency}/USDT` : '7 Day Performance'}
+                    </p>
+                </div>
+                <span className="text-xs font-bold text-[#0a0a0f] bg-[#00f3ff] px-3 py-1 rounded shadow-[0_0_10px_#00f3ff]">LIVE</span>
+            </div>
+
             <div className="h-[300px] w-full">
                 <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                     <AreaChart data={data}>
                         <defs>
                             <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.4} />
-                                <stop offset="95%" stopColor="#4f46e5" stopOpacity={0} />
+                                <stop offset="5%" stopColor="#00f3ff" stopOpacity={0.3} />
+                                <stop offset="95%" stopColor="#00f3ff" stopOpacity={0} />
                             </linearGradient>
                         </defs>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
                         <XAxis
                             dataKey="name"
                             axisLine={false}
                             tickLine={false}
-                            tick={{ fill: '#6b7280', fontSize: 12 }}
+                            tick={{ fill: '#6b7280', fontSize: 10, fontFamily: 'monospace' }}
                             dy={10}
                         />
                         <YAxis
@@ -50,23 +67,23 @@ export default function PortfolioChart() {
                         />
                         <Tooltip
                             contentStyle={{
-                                backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                                borderRadius: '12px',
-                                border: 'none',
-                                boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)'
+                                backgroundColor: '#0a0a0f',
+                                borderRadius: '8px',
+                                border: '1px solid rgba(255,255,255,0.1)',
+                                boxShadow: '0 0 20px rgba(0,0,0,0.5)'
                             }}
-                            itemStyle={{ color: '#4f46e5', fontWeight: 'bold' }}
-                            cursor={{ stroke: '#4f46e5', strokeWidth: 1, strokeDasharray: '4 4' }}
+                            itemStyle={{ color: '#00f3ff', fontFamily: 'monospace' }}
+                            cursor={{ stroke: '#bd00ff', strokeWidth: 1, strokeDasharray: '4 4' }}
                             formatter={(value: any) => [`$${value}`, 'Value']}
                         />
                         <Area
                             type="monotone"
                             dataKey="value"
-                            stroke="#4f46e5"
-                            strokeWidth={3}
+                            stroke="#00f3ff"
+                            strokeWidth={2}
                             fillOpacity={1}
                             fill="url(#colorValue)"
-                            animationDuration={2000}
+                            animationDuration={1500}
                         />
                     </AreaChart>
                 </ResponsiveContainer>
