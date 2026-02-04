@@ -26,27 +26,34 @@ export default function DashboardPage() {
                 return;
             }
 
-            if (!res.ok) {
-                throw new Error(`Failed to fetch: ${res.statusText}`);
-            }
-
             const responseData = await res.json();
 
-            if (responseData.code === 200 || responseData.code === 0) {
-                if (responseData.data && Array.isArray(responseData.data.assets)) {
-                    setBalances(responseData.data.assets);
-                } else if (responseData.data && Array.isArray(responseData.data)) {
-                    setBalances(responseData.data);
+            // Handle standard Bitunix response wrapper
+            if (responseData.code === 0 || responseData.code === 200 || responseData.code === '0') {
+                // Bitunix sometimes wraps data doubly or changes structure. 
+                // Based on UserAccount interface: { uid: string, assets: Balance[] }
+                const assets = responseData.data?.assets || responseData.data || [];
+
+                if (Array.isArray(assets)) {
+                    setBalances(assets);
                 } else {
+                    console.warn('Unexpected data format:', responseData);
                     setBalances([]);
                 }
             } else {
-                throw new Error(responseData.msg || 'Unknown API error');
+                // Pass through API error
+                throw new Error(responseData.msg || responseData.error || 'Unknown API Error');
             }
 
         } catch (err: any) {
-            console.error(err);
-            setError(err.message);
+            console.error('[Dashboard] Fetch Error:', err);
+            // Check for the specific "result.success" string which implies a parsing failure upstream
+            const msg = err.message || 'Failed to load data';
+            if (msg.includes('result.success')) {
+                setError('Data format error. Please refresh.');
+            } else {
+                setError(msg);
+            }
         } finally {
             setLoading(false);
         }
@@ -56,9 +63,13 @@ export default function DashboardPage() {
         fetchBalances();
     }, [fetchBalances]);
 
-    // Calculate Total Balance
+    // Calculate Total Balance safely
     const totalBalance = useMemo(() => {
-        return balances.reduce((acc, curr) => acc + parseFloat(curr.usdtValue), 0);
+        if (!balances || !Array.isArray(balances)) return 0;
+        return balances.reduce((acc, curr) => {
+            const val = parseFloat(curr.usdtValue);
+            return acc + (isNaN(val) ? 0 : val);
+        }, 0);
     }, [balances]);
 
     return (
