@@ -39,11 +39,13 @@ export async function bitunixFetch<T>(
 
     const signature = generateSignature(timestamp, method, requestPath, bodyString);
 
+    const nonce = crypto.randomBytes(16).toString('hex'); // 32 characters
     const headers: HeadersInit = {
         'Content-Type': 'application/json',
         'api-key': API_KEY,
         'timestamp': timestamp,
         'sign': signature,
+        'nonce': nonce,
     };
 
     const options: RequestInit = {
