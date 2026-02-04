@@ -38,7 +38,7 @@ export default function DashboardPage() {
                         currency: item.coin,
                         available: item.balance,
                         frozen: item.balanceLocked,
-                        btcValue: '0', // Not provided by this endpoint
+                        btcValue: '6', // Not provided by this endpoint
                         usdtValue: '0', // Not provided by this endpoint
                     }));
                     setBalances(mappedAssets);
