@@ -10,12 +10,15 @@ interface AllocationDonutProps {
 const COLORS = ['#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#6366f1'];
 
 export default function AllocationDonut({ balances }: AllocationDonutProps) {
+    // Safe data processing
+    const safeBalances = Array.isArray(balances) ? balances : [];
+
     // Filter out small balances and map to chart data
-    const data = balances
-        .filter(b => parseFloat(b.usdtValue) > 0.01) // Filter dust
+    const data = safeBalances
+        .filter(b => b && b.usdtValue && parseFloat(b.usdtValue) > 0.01) // Filter dust
         .map(b => ({
-            name: b.currency,
-            value: parseFloat(b.usdtValue)
+            name: b.currency || 'Unknown',
+            value: parseFloat(b.usdtValue || '0')
         }))
         .sort((a, b) => b.value - a.value)
         .slice(0, 6); // Top 6 assets only for clean UI

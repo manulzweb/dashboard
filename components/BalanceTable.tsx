@@ -97,9 +97,9 @@ export default function BalanceTable({ balances, loading, onRefresh, error }: Ba
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="flex items-center">
                                             <div className="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-xs mr-3">
-                                                {balance.currency.substring(0, 2)}
+                                                {(balance.currency || '?').substring(0, 2)}
                                             </div>
-                                            <span className="text-sm font-bold text-gray-900">{balance.currency}</span>
+                                            <span className="text-sm font-bold text-gray-900">{balance.currency || 'Unknown'}</span>
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 text-right font-medium">

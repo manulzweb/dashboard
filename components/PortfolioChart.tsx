@@ -29,7 +29,7 @@ export default function PortfolioChart() {
                 <span className="text-xs font-normal text-gray-500 bg-gray-100 px-2 py-1 rounded-full">7 Day</span>
             </h3>
             <div className="h-[300px] w-full">
-                <ResponsiveContainer width="100%" height="100%">
+                <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                     <AreaChart data={data}>
                         <defs>
                             <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
