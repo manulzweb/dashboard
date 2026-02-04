@@ -41,9 +41,9 @@ export async function bitunixFetch<T>(
 
     const headers: HeadersInit = {
         'Content-Type': 'application/json',
-        'X-BX-APIKEY': API_KEY,
-        'X-BX-TIMESTAMP': timestamp,
-        'X-BX-SIGNATURE': signature,
+        'api-key': API_KEY,
+        'timestamp': timestamp,
+        'sign': signature,
     };
 
     const options: RequestInit = {
