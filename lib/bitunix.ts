@@ -1,9 +1,9 @@
 import crypto from 'crypto';
 import { BitunixResponse } from './types';
 
-const API_KEY = process.env.BITUNIX_API_KEY;
-const API_SECRET = process.env.BITUNIX_API_SECRET;
-const BASE_URL = 'https://openapi.bitunix.com'; // Verify if this is the correct base URL for Bitunix
+const API_KEY = process.env.BITUNIX_API_KEY?.trim();
+const API_SECRET = process.env.BITUNIX_API_SECRET?.trim();
+const BASE_URL = 'https://openapi.bitunix.com';
 
 if (!API_KEY || !API_SECRET) {
     console.error('Missing BITUNIX_API_KEY or BITUNIX_API_SECRET in environment variables');

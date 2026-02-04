@@ -39,8 +39,9 @@ export default function ConnectionStatus() {
         );
     }
 
+    // Use a state or ref to store detailed info if needed, but for now just title
     return (
-        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-bold border border-green-200">
+        <div title={keyPrefix ? `Keys Configured (Prefix: ${keyPrefix})` : "Keys Configured"} className="flex items-center gap-2 px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-bold border border-green-200 cursor-help">
             <CheckCircle className="w-4 h-4" />
             System Ready
         </div>
