@@ -23,8 +23,8 @@ export default function BalanceTable({ balances, loading, onRefresh, error }: Ba
                     onClick={onRefresh}
                     disabled={loading}
                     className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${loading
-                            ? 'bg-blue-100 text-blue-400 cursor-not-allowed'
-                            : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:shadow-lg hover:scale-105 active:scale-95'
+                        ? 'bg-blue-100 text-blue-400 cursor-not-allowed'
+                        : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:shadow-lg hover:scale-105 active:scale-95'
                         }`}
                 >
                     <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
@@ -33,8 +33,16 @@ export default function BalanceTable({ balances, loading, onRefresh, error }: Ba
             </div>
 
             {error && (
-                <div className="p-4 bg-red-50/80 backdrop-blur text-red-600 border-b border-red-100 flex items-center gap-2">
-                    <span className="font-bold">Error:</span> {error}
+                <div className="p-4 bg-red-50/80 backdrop-blur text-red-600 border-b border-red-100 flex flex-col gap-1">
+                    <div className="flex items-center gap-2">
+                        <span className="font-bold">Error:</span>
+                        {error.includes('APP_KEY_NOT_EXIST') || error.includes('app_key_not_exit') ? 'Invalid API Key' : error}
+                    </div>
+                    {(error.includes('APP_KEY_NOT_EXIST') || error.includes('app_key_not_exit')) && (
+                        <p className="text-sm text-red-800 ml-1">
+                            Bitunix rejected your API Key. Please check your Vercel Environment Variables for typos or extra spaces.
+                        </p>
+                    )}
                 </div>
             )}
 

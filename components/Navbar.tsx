@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import ConnectionStatus from './ConnectionStatus';
 
 export default function Navbar() {
     const router = useRouter();
@@ -28,10 +29,11 @@ export default function Navbar() {
                             Crypto Dashboard
                         </Link>
                     </div>
-                    <div className="flex items-center">
+                    <div className="flex items-center gap-4">
+                        <ConnectionStatus />
                         <button
                             onClick={handleLogout}
-                            className="ml-4 px-4 py-2 rounded text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
+                            className="px-4 py-2 rounded text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
                         >
                             Logout
                         </button>
