@@ -4,6 +4,12 @@ export interface BitunixResponse<T> {
     data: T;
 }
 
+export interface BitunixBalance {
+    coin: string;
+    balance: string;
+    balanceLocked: string;
+}
+
 export interface Balance {
     currency: string;
     available: string;

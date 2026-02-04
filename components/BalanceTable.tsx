@@ -68,13 +68,13 @@ export default function BalanceTable({ balances, loading, onRefresh, error }: Ba
                                 Asset
                             </th>
                             <th scope="col" className="px-6 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">
-                                Available
+                                Disponible
                             </th>
                             <th scope="col" className="px-6 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">
-                                Frozen
+                                Congelado
                             </th>
                             <th scope="col" className="px-6 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">
-                                USDT Value
+                                Valor USDT
                             </th>
                         </tr>
                     </thead>
@@ -88,7 +88,7 @@ export default function BalanceTable({ balances, loading, onRefresh, error }: Ba
                         ) : balances.length === 0 ? (
                             <tr>
                                 <td colSpan={4} className="px-6 py-12 text-center text-gray-500 italic">
-                                    No balances found. Start trading to see assets here.
+                                    Balance no encontrado. Comienza a operar para ver tus activos aquí.
                                 </td>
                             </tr>
                         ) : (

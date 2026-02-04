@@ -30,12 +30,18 @@ export default function DashboardPage() {
 
             // Handle standard Bitunix response wrapper
             if (responseData.code === 0 || responseData.code === 200 || responseData.code === '0') {
-                // Bitunix sometimes wraps data doubly or changes structure. 
-                // Based on UserAccount interface: { uid: string, assets: Balance[] }
-                const assets = responseData.data?.assets || responseData.data || [];
+                const rawAssets = responseData.data || [];
 
-                if (Array.isArray(assets)) {
-                    setBalances(assets);
+                if (Array.isArray(rawAssets)) {
+                    // Map the raw API response (BitunixBalance) to our internal Balance interface
+                    const mappedAssets: Balance[] = rawAssets.map((item: any) => ({
+                        currency: item.coin,
+                        available: item.balance,
+                        frozen: item.balanceLocked,
+                        btcValue: '0', // Not provided by this endpoint
+                        usdtValue: '0', // Not provided by this endpoint
+                    }));
+                    setBalances(mappedAssets);
                 } else {
                     console.warn('Unexpected data format:', responseData);
                     setBalances([]);
