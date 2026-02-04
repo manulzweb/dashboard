@@ -36,12 +36,26 @@ export default function BalanceTable({ balances, loading, onRefresh, error }: Ba
                 <div className="p-4 bg-red-50/80 backdrop-blur text-red-600 border-b border-red-100 flex flex-col gap-1">
                     <div className="flex items-center gap-2">
                         <span className="font-bold">Error:</span>
-                        {error.includes('APP_KEY_NOT_EXIST') || error.includes('app_key_not_exit') ? 'Invalid API Key' : error}
+                        {error.includes('APP_KEY_NOT_EXIST') || error.includes('app_key_not_exit') ? 'Invalid API Key' :
+                            error.includes('trigger.verify.ip.risk') || error.includes('100011') ? 'IP Restricted' : error}
                     </div>
+
+                    {/* Key Error */}
                     {(error.includes('APP_KEY_NOT_EXIST') || error.includes('app_key_not_exit')) && (
                         <p className="text-sm text-red-800 ml-1">
                             Bitunix rejected your API Key. Please check your Vercel Environment Variables for typos or extra spaces.
                         </p>
+                    )}
+
+                    {/* IP Error */}
+                    {(error.includes('trigger.verify.ip.risk') || error.includes('100011')) && (
+                        <div className="text-sm text-red-800 ml-1">
+                            <p>Bitunix blocked this server&apos;s IP. You need to:</p>
+                            <ol className="list-decimal ml-5 mt-1 space-y-1">
+                                <li><strong>Disable IP restriction</strong> on your Bitunix API Key settings. (Easiest for Vercel)</li>
+                                <li>Or, check <a href="/api/ip" target="_blank" className="underline text-blue-600">this server&apos;s IP</a> and whitelist it.</li>
+                            </ol>
+                        </div>
                     )}
                 </div>
             )}
